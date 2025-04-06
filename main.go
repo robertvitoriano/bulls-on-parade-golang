@@ -1,29 +1,29 @@
 package main
 
 import (
+	"fmt"
 	_ "image/png"
 	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/robertvitoriano/bulls-on-parade-golang/entities"
 )
 
 const (
 	screenWidth  = 640
 	screenHeight = 480
 	fps          = 10
-	frameCount   = 5
-	frameWidth   = 16
-	frameHeight  = 16
 )
 
 type Game struct {
-	player GameObject
+	player *entities.Player
 }
 
 var timeToUpdate int64
 
 func (g *Game) Update() error {
+
 	durationPerFrame := time.Second / time.Duration(fps)
 	durationPerFrameMs := durationPerFrame.Milliseconds()
 
@@ -38,11 +38,14 @@ func (g *Game) Update() error {
 		timeToUpdate = nextTimeToUpdate
 		g.player.Update()
 	}
+	fmt.Println("UPDATE")
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	fmt.Println("draw")
+
 	g.player.Draw(screen)
 }
 
@@ -51,20 +54,17 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+	fmt.Println("Starting the game...")
+
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 
 	ebiten.SetWindowTitle("Animation")
 
-	player := GameObject{
-		animator: &Animator{},
-	}
+	player := entities.NewPlayer()
 
-	player.animator.AddAnimation("walk", "character.png", "horizontal", FrameProperties{
-		width:  frameWidth,
-		height: frameHeight,
-		count:  frameCount,
-	})
-	player.animator.ChangeAnimation("walk")
+	if player == nil {
+		log.Fatal("Player is nil!")
+	}
 
 	if err := ebiten.RunGame(&Game{player: player}); err != nil {
 		log.Fatal(err)

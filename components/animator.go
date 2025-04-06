@@ -1,4 +1,4 @@
-package main
+package components
 
 import (
 	"image"
@@ -9,9 +9,9 @@ import (
 )
 
 type FrameProperties struct {
-	width  int
-	height int
-	count  int
+	Width  int
+	Height int
+	Count  int
 }
 type Animator struct {
 	animations        map[string][]*ebiten.Image
@@ -31,20 +31,20 @@ func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, or
 		a.currentAnimation = animationName
 	}
 
-	images := make([]*ebiten.Image, 0, frameProperties.count)
+	images := make([]*ebiten.Image, 0, frameProperties.Count)
 
 	if orientation == "horizontal" {
-		for i := 0; i < frameProperties.count; i++ {
-			xOffset := frameProperties.width * i
-			frame := charImageAnimationSprite.SubImage(image.Rect(xOffset, 0, xOffset+frameProperties.width, frameProperties.height)).(*ebiten.Image)
+		for i := 0; i < frameProperties.Count; i++ {
+			xOffset := frameProperties.Width * i
+			frame := charImageAnimationSprite.SubImage(image.Rect(xOffset, 0, xOffset+frameProperties.Width, frameProperties.Height)).(*ebiten.Image)
 			images = append(images, frame)
 		}
 	}
 
 	if orientation == "vertical" {
-		for i := 0; i < frameProperties.count; i++ {
-			yOffset := frameProperties.height * i
-			frame := charImageAnimationSprite.SubImage(image.Rect(0, yOffset, frameProperties.width, frameProperties.height+yOffset)).(*ebiten.Image)
+		for i := 0; i < frameProperties.Count; i++ {
+			yOffset := frameProperties.Height * i
+			frame := charImageAnimationSprite.SubImage(image.Rect(0, yOffset, frameProperties.Width, frameProperties.Height+yOffset)).(*ebiten.Image)
 			images = append(images, frame)
 		}
 	}
