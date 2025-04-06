@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	_ "image/png"
 	"log"
 	"time"
@@ -38,14 +37,10 @@ func (g *Game) Update() error {
 		timeToUpdate = nextTimeToUpdate
 		g.player.Update()
 	}
-	fmt.Println("UPDATE")
-
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	fmt.Println("draw")
-
 	g.player.Draw(screen)
 }
 
@@ -54,8 +49,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	fmt.Println("Starting the game...")
-
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 
 	ebiten.SetWindowTitle("Animation")
