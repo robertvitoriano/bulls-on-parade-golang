@@ -10,7 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func ReadImage(path string) (*ebiten.Image, error) {
+func ReadImageFile(path string) (*ebiten.Image, error) {
 	charAnimationFile, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)

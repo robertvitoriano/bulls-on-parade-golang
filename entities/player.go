@@ -15,12 +15,20 @@ func NewPlayer() *Player {
 			Animator: components.Animator{},
 		},
 	}
-	player.gameObject.Animator.AddAnimation("walk", "character.png", "horizontal", components.FrameProperties{
+
+	player.gameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  5,
 	})
-	player.gameObject.Animator.ChangeAnimation("walk")
+
+	player.gameObject.Animator.AddAnimation("walk-right", "character.png", 1, 0, "horizontal", components.FrameProperties{
+		Width:  16,
+		Height: 16,
+		Count:  5,
+	})
+
+	player.gameObject.Animator.ChangeAnimation("walk-right")
 
 	return player
 }

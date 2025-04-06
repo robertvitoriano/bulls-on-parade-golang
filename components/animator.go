@@ -2,6 +2,7 @@ package components
 
 import (
 	"image"
+	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -19,8 +20,8 @@ type Animator struct {
 	currentFrameIndex int
 }
 
-func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, orientation string, frameProperties FrameProperties) {
-	charImageAnimationSprite, err := utils.ReadImage(spriteSheetPath)
+func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, initialRow int, initialColumn int, orientation string, frameProperties FrameProperties) {
+	charImageAnimationSprite, err := utils.ReadImageFile(spriteSheetPath)
 
 	if err != nil {
 		log.Fatal(err)
@@ -34,24 +35,39 @@ func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, or
 	images := make([]*ebiten.Image, 0, frameProperties.Count)
 
 	if orientation == "horizontal" {
+		startX := initialColumn * frameProperties.Width
+		startY := initialRow * frameProperties.Height
+
 		for i := 0; i < frameProperties.Count; i++ {
-			xOffset := frameProperties.Width * i
-			frame := charImageAnimationSprite.SubImage(image.Rect(xOffset, 0, xOffset+frameProperties.Width, frameProperties.Height)).(*ebiten.Image)
+			xOffset := startX + (frameProperties.Width * i)
+			yOffset := startY
+			frame := charImageAnimationSprite.SubImage(image.Rect(
+				xOffset,
+				yOffset,
+				xOffset+frameProperties.Width,
+				yOffset+frameProperties.Height)).(*ebiten.Image)
 			images = append(images, frame)
 		}
 	}
 
 	if orientation == "vertical" {
+		startX := initialColumn * frameProperties.Width
+		startY := initialRow * frameProperties.Height
+
 		for i := 0; i < frameProperties.Count; i++ {
-			yOffset := frameProperties.Height * i
-			frame := charImageAnimationSprite.SubImage(image.Rect(0, yOffset, frameProperties.Width, frameProperties.Height+yOffset)).(*ebiten.Image)
+			xOffset := startX
+			yOffset := startY + (frameProperties.Height * i)
+			frame := charImageAnimationSprite.SubImage(image.Rect(
+				xOffset,
+				yOffset,
+				xOffset+frameProperties.Width,
+				yOffset+frameProperties.Height)).(*ebiten.Image)
 			images = append(images, frame)
 		}
 	}
 
 	a.animations[animationName] = images
 }
-
 func (a *Animator) ChangeAnimation(animationName string) {
 	a.currentAnimation = animationName
 }
