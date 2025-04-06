@@ -14,8 +14,9 @@ type FrameProperties struct {
 	count  int
 }
 type Animator struct {
-	animations       map[string][]*ebiten.Image
-	currentAnimation string
+	animations        map[string][]*ebiten.Image
+	currentAnimation  string
+	currentFrameIndex int
 }
 
 func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, orientation string, frameProperties FrameProperties) {
@@ -51,6 +52,19 @@ func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, or
 	a.animations[animationName] = images
 }
 
-func (g *GameObject) PlayAnimation(animationName string) {
+func (a *Animator) ChangeAnimation(animationName string) {
+	a.currentAnimation = animationName
+}
 
+func (a *Animator) Update() {
+	a.currentFrameIndex = (a.currentFrameIndex + 1) % len(a.animations[a.currentAnimation])
+}
+
+func (a *Animator) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(40, 30)
+
+	if len(a.animations) > 0 {
+		screen.DrawImage(a.animations[a.currentAnimation][a.currentFrameIndex], op)
+	}
 }

@@ -21,7 +21,6 @@ type Game struct {
 	player GameObject
 }
 
-var currentFrameIndex int
 var timeToUpdate int64
 
 func (g *Game) Update() error {
@@ -37,19 +36,14 @@ func (g *Game) Update() error {
 	if now >= timeToUpdate {
 		nextTimeToUpdate := now + durationPerFrameMs
 		timeToUpdate = nextTimeToUpdate
-		currentFrameIndex = (currentFrameIndex + 1) % frameCount
+		g.player.Update()
 	}
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(40, 30)
-
-	if len(g.player.animator.animations) > 0 {
-		screen.DrawImage(g.player.animator.animations["walk"][currentFrameIndex], op)
-	}
+	g.player.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -70,6 +64,7 @@ func main() {
 		height: frameHeight,
 		count:  frameCount,
 	})
+	player.animator.ChangeAnimation("walk")
 
 	if err := ebiten.RunGame(&Game{player: player}); err != nil {
 		log.Fatal(err)
