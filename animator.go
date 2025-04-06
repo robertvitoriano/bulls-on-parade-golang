@@ -8,6 +8,11 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
+type FrameProperties struct {
+	width  int
+	height int
+	count  int
+}
 type Animator struct {
 	animations       map[string][]*ebiten.Image
 	currentAnimation string

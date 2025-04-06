@@ -3,18 +3,18 @@ package main
 import (
 	_ "image/png"
 	"log"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
-	screenWidth    = 640
-	screenHeight   = 480
-	animationSpeed = 5
-	fps            = 30
-	frameWidth     = 16
-	frameHeight    = 16
-	frameCount     = 5
+	screenWidth  = 640
+	screenHeight = 480
+	fps          = 10
+	frameCount   = 5
+	frameWidth   = 16
+	frameHeight  = 16
 )
 
 type Game struct {
@@ -22,14 +22,24 @@ type Game struct {
 }
 
 var currentFrameIndex int
-var tick int
+var timeToUpdate int64
 
 func (g *Game) Update() error {
-	tick++
+	durationPerFrame := time.Second / time.Duration(fps)
+	durationPerFrameMs := durationPerFrame.Milliseconds()
 
-	if tick%animationSpeed == 0 {
+	now := time.Now().UnixMilli()
+
+	if timeToUpdate == 0 {
+		timeToUpdate = now + durationPerFrameMs
+	}
+
+	if now >= timeToUpdate {
+		nextTimeToUpdate := now + durationPerFrameMs
+		timeToUpdate = nextTimeToUpdate
 		currentFrameIndex = (currentFrameIndex + 1) % frameCount
 	}
+
 	return nil
 }
 
