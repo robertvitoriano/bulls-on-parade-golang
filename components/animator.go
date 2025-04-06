@@ -69,16 +69,19 @@ func (a *Animator) AddAnimation(animationName string, spriteSheetPath string, in
 	a.animations[animationName] = images
 }
 func (a *Animator) ChangeAnimation(animationName string) {
-	a.currentAnimation = animationName
+	if animationName != a.currentAnimation {
+		a.currentAnimation = animationName
+		a.currentFrameIndex = 0
+	}
 }
 
 func (a *Animator) Update() {
 	a.currentFrameIndex = (a.currentFrameIndex + 1) % len(a.animations[a.currentAnimation])
 }
 
-func (a *Animator) Draw(screen *ebiten.Image) {
+func (a *Animator) Draw(screen *ebiten.Image, position Position) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(40, 30)
+	op.GeoM.Translate(position.X, position.Y)
 
 	if len(a.animations) > 0 {
 		screen.DrawImage(a.animations[a.currentAnimation][a.currentFrameIndex], op)

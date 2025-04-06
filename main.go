@@ -34,11 +34,15 @@ func (g *Game) Update() error {
 	if now >= timeToUpdate {
 		nextTimeToUpdate := now + durationPerFrameMs
 		timeToUpdate = nextTimeToUpdate
-		g.player.Update()
+		g.handleUpdate()
 	}
 	return nil
 }
 
+func (g *Game) handleUpdate() {
+	g.player.Update()
+
+}
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.player.Draw(screen)
 }
