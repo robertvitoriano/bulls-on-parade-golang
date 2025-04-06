@@ -9,103 +9,90 @@ import (
 )
 
 type Animation struct {
-	Duration int `json:"duration,omitempty"`
-	TileId   int `json:"tileid,omitempty"`
+	Duration int `json:"duration"`
+	TileId   int `json:"tileid"`
 }
 
 type Tile struct {
-	Animation []Animation `json:"animation,omitempty"`
-	Id        int         `json:"id,omitempty"`
+	Animation []Animation `json:"animation"`
+	Id        int         `json:"id"`
 }
 type TileSet struct {
-	Columns     int    `json:"columns,omitempty"`
-	FirstGID    int    `json:"firstgid,omitempty"`
-	Image       string `json:"image,omitempty"`
-	ImageHeight int    `json:"imageheight,omitempty"`
-	ImageWidth  int    `json:"imagewidth,omitempty"`
-	Margin      int    `json:"margin,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Spacing     int    `json:"spacing,omitempty"`
-	TileCount   int    `json:"tilecount,omitempty"`
-	TileHeight  int    `json:"tileheight,omitempty"`
-	TileWidth   int    `json:"tilewidth,omitempty"`
-	Tiles       []Tile `json:"tiles,omitempty"`
+	Columns     int    `json:"columns"`
+	FirstGID    int    `json:"firstgid"`
+	Image       string `json:"image"`
+	ImageHeight int    `json:"imageheight"`
+	ImageWidth  int    `json:"imagewidth"`
+	Margin      int    `json:"margin"`
+	Name        string `json:"name"`
+	Spacing     int    `json:"spacing"`
+	TileCount   int    `json:"tilecount"`
+	TileHeight  int    `json:"tileheight"`
+	TileWidth   int    `json:"tilewidth"`
+	Tiles       []Tile `json:"tiles"`
 }
 type PolylinePoint struct {
-	X float64 `json:"x,omitempty"`
-	Y float64 `json:"y,omitempty"`
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
 type ObjectProperty struct {
-	Name  string `json:"name,omitempty"`
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value,omitempty"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 type Object struct {
-	Id         int              `json:"id,omitempty"`
-	Height     float64          `json:"height,omitempty"`
-	Width      float64          `json:"width,omitempty"`
-	X          float64          `json:"x,omitempty"`
-	Y          float64          `json:"y,omitempty"`
-	Visible    bool             `json:"visible,omitempty"`
-	Name       string           `json:"name,omitempty"`
-	Rotation   float64          `json:"rotation,omitempty"`
-	Properties []ObjectProperty `json:"properties,omitempty"`
-	Polyline   []PolylinePoint  `json:"polyline,omitempty"`
-	Ellipse    bool             `json:"ellipse,omitempty"`
-	Type       string           `json:"type,omitempty"`
+	Id         int              `json:"id"`
+	Height     float64          `json:"height"`
+	Width      float64          `json:"width"`
+	X          float64          `json:"x"`
+	Y          float64          `json:"y"`
+	Visible    bool             `json:"visible"`
+	Name       string           `json:"name"`
+	Rotation   float64          `json:"rotation"`
+	Properties []ObjectProperty `json:"properties"`
+	Polyline   []PolylinePoint  `json:"polyline"`
+	Ellipse    bool             `json:"ellipse"`
+	Type       string           `json:"type"`
 }
 
 type Layer struct {
-	Data      []int    `json:"data,omitempty"`
-	Height    int      `json:"height,omitempty"`
-	Width     int      `json:"width,omitempty"`
-	Id        int      `json:"id,omitempty"`
-	Name      string   `json:"name,omitempty"`
-	Opacity   int      `json:"opacity,omitempty"`
-	Type      string   `json:"type,omitempty"`
-	Visible   bool     `json:"visible,omitempty"`
-	X         float64  `json:"x,omitempty"`
-	Y         float64  `json:"y,omitempty"`
-	DrawOrder string   `json:"draworder,omitempty"`
-	Objects   []Object `json:"objects,omitempty"`
-	Color     string   `json:"color,omitempty"`
+	Data      []int    `json:"data"`
+	Height    int      `json:"height"`
+	Width     int      `json:"width"`
+	Id        int      `json:"id"`
+	Name      string   `json:"name"`
+	Opacity   int      `json:"opacity"`
+	Type      string   `json:"type"`
+	Visible   bool     `json:"visible"`
+	X         float64  `json:"x"`
+	Y         float64  `json:"y"`
+	DrawOrder string   `json:"draworder"`
+	Objects   []Object `json:"objects"`
+	Color     string   `json:"color"`
 }
 
 type LevelData struct {
-	Width            float64   `json:"width,omitempty"`
-	Height           float64   `json:"height,omitempty"`
-	Version          string    `json:"version,omitempty"`
-	Type             string    `json:"type,omitempty"`
-	CompressionLevel int       `json:"compressionlevel,omitempty"`
-	Infinite         bool      `json:"infinite,omitempty"`
-	NextLayerId      int       `json:"nextlayerid,omitempty"`
-	NextObjectId     int       `json:"nextobjectid,omitempty"`
-	Orientation      string    `json:"orientation,omitempty"`
-	RenderOrder      string    `json:"renderorder,omitempty"`
-	TiledVersion     string    `json:"tiledversion,omitempty"`
-	TileHeight       int       `json:"tileheight,omitempty"`
-	TileWidth        int       `json:"tilewidth,omitempty"`
-	Layers           []Layer   `json:"layers,omitempty"`
-	TileSets         []TileSet `json:"tilesets,omitempty"`
+	Width            float64   `json:"width"`
+	Height           float64   `json:"height"`
+	Version          string    `json:"version"`
+	Type             string    `json:"type"`
+	CompressionLevel int       `json:"compressionlevel"`
+	Infinite         bool      `json:"infinite"`
+	NextLayerId      int       `json:"nextlayerid"`
+	NextObjectId     int       `json:"nextobjectid"`
+	Orientation      string    `json:"orientation"`
+	RenderOrder      string    `json:"renderorder"`
+	TiledVersion     string    `json:"tiledversion"`
+	TileHeight       int       `json:"tileheight"`
+	TileWidth        int       `json:"tilewidth"`
+	Layers           []Layer   `json:"layers"`
+	TileSets         []TileSet `json:"tilesets"`
 }
 type Level struct {
-	Width            float64   `json:"width,omitempty"`
-	Height           float64   `json:"height,omitempty"`
-	Version          string    `json:"version,omitempty"`
-	Type             string    `json:"type,omitempty"`
-	CompressionLevel int       `json:"compressionlevel,omitempty"`
-	Infinite         bool      `json:"infinite,omitempty"`
-	NextLayerId      int       `json:"nextlayerid,omitempty"`
-	NextObjectId     int       `json:"nextobjectid,omitempty"`
-	Orientation      string    `json:"orientation,omitempty"`
-	RenderOrder      string    `json:"renderorder,omitempty"`
-	TiledVersion     string    `json:"tiledversion,omitempty"`
-	TileHeight       int       `json:"tileheight,omitempty"`
-	TileWidth        int       `json:"tilewidth,omitempty"`
-	Layers           []Layer   `json:"layers,omitempty"`
-	TileSets         []TileSet `json:"tilesets,omitempty"`
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
 }
 
 func NewLevel(filePath string) *Level {

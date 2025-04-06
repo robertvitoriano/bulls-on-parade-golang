@@ -468,7 +468,7 @@
         {
          "columns":16,
          "firstgid":1,
-         "image":"..\/content\/tilesets\/PrtCave.png",
+         "image":"..\/tilesets\/PrtCave.png",
          "imageheight":80,
          "imagewidth":256,
          "margin":0,
@@ -481,7 +481,7 @@
         {
          "columns":20,
          "firstgid":81,
-         "image":"..\/content\/tilesets\/NpcSym.png",
+         "image":"..\/tilesets\/NpcSym.png",
          "imageheight":240,
          "imagewidth":320,
          "margin":0,
