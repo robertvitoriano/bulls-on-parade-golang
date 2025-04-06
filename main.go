@@ -35,11 +35,10 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	op.GeoM.Translate(40, 30)
 
-	if len(g.player.animations) > 0 {
-		screen.DrawImage(g.player.animations["walk"][currentFrameIndex], op)
+	if len(g.player.animator.animations) > 0 {
+		screen.DrawImage(g.player.animator.animations["walk"][currentFrameIndex], op)
 	}
 }
 
@@ -52,9 +51,11 @@ func main() {
 
 	ebiten.SetWindowTitle("Animation")
 
-	player := GameObject{}
+	player := GameObject{
+		animator: &Animator{},
+	}
 
-	player.AddAnimation("walk", "character.png", "horizontal", FrameProperties{
+	player.animator.AddAnimation("walk", "character.png", "horizontal", FrameProperties{
 		width:  frameWidth,
 		height: frameHeight,
 		count:  frameCount,
