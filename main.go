@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "image/png"
 	"log"
 	"time"
 
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-	screenWidth  = 640
-	screenHeight = 480
+	screenWidth  = 320
+	screenHeight = 256
 	fps          = 10
 )
 

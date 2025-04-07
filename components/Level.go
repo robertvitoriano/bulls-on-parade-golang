@@ -105,6 +105,8 @@ type Level struct {
 	TileImages map[int]*ebiten.Image
 }
 
+var scale = 1.875
+
 func NewLevel(filePath string) *Level {
 	jsonFile, err := os.Open(filePath)
 	if err != nil {
