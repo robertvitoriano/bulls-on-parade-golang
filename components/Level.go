@@ -2,10 +2,13 @@ package components
 
 import (
 	"encoding/json"
-	"fmt"
+	"image"
 	"io"
 	"log"
 	"os"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Animation struct {
@@ -91,8 +94,15 @@ type LevelData struct {
 	TileSets         []TileSet `json:"tilesets"`
 }
 type Level struct {
-	Width  float64 `json:"width"`
-	Height float64 `json:"height"`
+	Width      float64
+	Height     float64
+	TileWidth  float64
+	TileHeight float64
+	X          float64
+	Y          float64
+	Layers     []Layer
+	TileSets   []TileSet
+	TileImages map[int]*ebiten.Image
 }
 
 func NewLevel(filePath string) *Level {
@@ -103,19 +113,100 @@ func NewLevel(filePath string) *Level {
 	defer jsonFile.Close()
 
 	jsonFileData, err := io.ReadAll(jsonFile)
-
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	var parsedData LevelData
 	err = json.Unmarshal(jsonFileData, &parsedData)
-
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, layer := range parsedData.Layers {
-		fmt.Println(layer)
+
+	level := &Level{
+		TileImages: make(map[int]*ebiten.Image),
 	}
-	fmt.Println(parsedData)
-	return &Level{}
+	level.loadMap(parsedData)
+
+	return level
+}
+
+func (l *Level) loadMap(levelData LevelData) {
+	l.Width = levelData.Width
+	l.Height = levelData.Height
+	l.TileWidth = float64(levelData.TileWidth)
+	l.TileHeight = float64(levelData.TileHeight)
+	l.Layers = levelData.Layers
+	l.TileSets = levelData.TileSets
+
+	// Load tile images
+	for _, tileset := range levelData.TileSets {
+		img, _, err := ebitenutil.NewImageFromFile(tileset.Image)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Store the image with its firstgid as the key
+		l.TileImages[tileset.FirstGID] = img
+	}
+}
+
+func (l *Level) Draw(screen *ebiten.Image) {
+	for _, layer := range l.Layers {
+		if layer.Type != "tilelayer" {
+			continue
+		}
+
+		for y := 0; y < layer.Height; y++ {
+			for x := 0; x < layer.Width; x++ {
+				tileIndex := y*layer.Width + x
+
+				// Check if the index is within bounds
+				if tileIndex >= len(layer.Data) {
+					continue
+				}
+
+				tileGID := layer.Data[tileIndex]
+
+				if tileGID == 0 {
+					continue // Skip empty tiles
+				}
+
+				// Find the correct tileset for this GID
+				var currentTileset TileSet
+				var currentGID int
+				for _, tileset := range l.TileSets {
+					if tileGID >= tileset.FirstGID {
+						currentTileset = tileset
+						currentGID = tileset.FirstGID
+					}
+				}
+
+				if currentTileset.FirstGID == 0 {
+					continue
+				}
+
+				// Calculate the tile's position in the tileset
+				localID := tileGID - currentGID
+				tilesetX := (localID % currentTileset.Columns) * currentTileset.TileWidth
+				tilesetY := (localID / currentTileset.Columns) * currentTileset.TileHeight
+
+				// Create a sub-image for the tile
+				tileImg := l.TileImages[currentGID].SubImage(image.Rect(
+					tilesetX,
+					tilesetY,
+					tilesetX+currentTileset.TileWidth,
+					tilesetY+currentTileset.TileHeight,
+				)).(*ebiten.Image)
+
+				// Draw the tile
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Translate(
+					float64(x)*l.TileWidth,
+					float64(y)*l.TileHeight,
+				)
+				screen.DrawImage(tileImg, op)
+			}
+		}
+	}
 }

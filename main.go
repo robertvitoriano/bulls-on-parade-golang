@@ -46,6 +46,7 @@ func (g *Game) handleUpdate() {
 
 }
 func (g *Game) Draw(screen *ebiten.Image) {
+	g.level.Draw(screen)
 	g.player.Draw(screen)
 }
 
