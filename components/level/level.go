@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -144,7 +145,14 @@ func (l *Level) loadMap(levelData LevelData) {
 	l.TileSets = levelData.TileSets
 
 	for _, tileset := range levelData.TileSets {
-		img, _, err := ebitenutil.NewImageFromFile(tileset.Image)
+
+		tileSetImagePrefix := "content/tilesets/"
+		fileNameChunks := strings.Split(tileset.Image, "/")
+		fileName := fileNameChunks[len(fileNameChunks)-1]
+		filePath := fmt.Sprintf("%s/%s", tileSetImagePrefix, fileName)
+
+		img, _, err := ebitenutil.NewImageFromFile(filePath)
+
 		if err != nil {
 			log.Fatal(err)
 		}
