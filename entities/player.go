@@ -126,9 +126,12 @@ func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
 		if p.GameObject.GetRight() < collision.GameObject.GetRight() {
 			p.collidedSide = "RIGHT"
 			p.velocity.x = 0
+			return
 		} else if p.GameObject.GetLeft() < collision.GameObject.GetLeft() {
 			p.collidedSide = "LEFT"
 			p.velocity.x = 0
+			return
 		}
 	}
+	p.collidedSide = "NONE"
 }
