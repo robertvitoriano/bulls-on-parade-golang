@@ -10,10 +10,15 @@ type Size struct {
 	Width  float64
 	Height float64
 }
+type Velocity struct {
+	X float64
+	Y float64
+}
 type GameObject struct {
 	Animator Animator
 	Position Position
 	Size     Size
+	Velocity Velocity
 }
 
 func (gameObject *GameObject) Update() {

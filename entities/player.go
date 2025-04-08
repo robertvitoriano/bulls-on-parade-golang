@@ -8,13 +8,8 @@ import (
 
 const VELOCITY = 2
 
-type Velocity struct {
-	x float64
-	y float64
-}
 type Player struct {
 	GameObject   components.GameObject
-	velocity     Velocity
 	collidedSide string
 }
 
@@ -27,10 +22,10 @@ func NewPlayer() *Player {
 				Width:  16,
 				Height: 16,
 			},
-		},
-		velocity: Velocity{
-			x: VELOCITY,
-			y: VELOCITY,
+			Velocity: components.Velocity{
+				X: VELOCITY,
+				Y: VELOCITY,
+			},
 		},
 		collidedSide: "NONE",
 	}
@@ -89,49 +84,62 @@ func (p *Player) MoveRight() {
 	p.GameObject.Animator.ChangeAnimation("walk-right")
 
 	if p.collidedSide != "RIGHT" {
-		p.velocity.x = VELOCITY
+		p.GameObject.Velocity.X = VELOCITY
 	}
 
-	p.GameObject.Position.X += p.velocity.x
+	p.GameObject.Position.X += p.GameObject.Velocity.X
 
 }
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
 	if p.collidedSide != "LEFT" {
-		p.velocity.x = VELOCITY
+		p.GameObject.Velocity.X = VELOCITY
 	}
-	p.GameObject.Position.X -= p.velocity.x
+	p.GameObject.Position.X -= p.GameObject.Velocity.X
 
 }
 func (p *Player) MoveUp() {
 	p.GameObject.Animator.ChangeAnimation("walk-up")
-	if p.collidedSide != "BOTTOM" {
-		p.velocity.x = VELOCITY
+	if p.collidedSide != "TOP" {
+		p.GameObject.Velocity.Y = VELOCITY
 	}
-	p.GameObject.Position.Y -= p.velocity.y
+	p.GameObject.Position.Y -= p.GameObject.Velocity.Y
 
 }
 func (p *Player) MoveDown() {
 	p.GameObject.Animator.ChangeAnimation("walk-down")
-	if p.collidedSide != "TOP" {
-		p.velocity.x = VELOCITY
+	if p.collidedSide != "BOTTOM" {
+		p.GameObject.Velocity.Y = VELOCITY
 	}
-	p.GameObject.Position.Y += p.velocity.y
+	p.GameObject.Position.Y += p.GameObject.Velocity.Y
 
 }
 
 func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
+	if len(collisions) == 0 {
+		p.collidedSide = "NONE"
+		return
+	}
+
 	for _, collision := range collisions {
 
-		if p.GameObject.GetRight() < collision.GameObject.GetRight() {
+		if p.GameObject.GetRight() < collision.GameObject.GetRight() && p.collidedSide == "NONE" {
 			p.collidedSide = "RIGHT"
-			p.velocity.x = 0
-			return
-		} else if p.GameObject.GetLeft() > collision.GameObject.GetLeft() {
+			p.GameObject.Velocity.X = 0
+
+		}
+		if p.GameObject.GetLeft() > collision.GameObject.GetLeft() && p.collidedSide == "NONE" {
 			p.collidedSide = "LEFT"
-			p.velocity.x = 0
-			return
+			p.GameObject.Velocity.X = 0
+		}
+		if p.GameObject.GetTop() > collision.GameObject.GetTop() && p.collidedSide == "NONE" {
+			p.collidedSide = "TOP"
+			p.GameObject.Velocity.Y = 0
+		}
+		if p.GameObject.GetBottom() < collision.GameObject.GetBottom() && p.collidedSide == "NONE" {
+			p.collidedSide = "BOTTOM"
+			p.GameObject.Velocity.Y = 0
 		}
 	}
-	p.collidedSide = "NONE"
+
 }
