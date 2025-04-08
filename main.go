@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/robertvitoriano/bulls-on-parade-golang/components"
+	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
 	"github.com/robertvitoriano/bulls-on-parade-golang/entities"
 )
 
@@ -18,7 +18,7 @@ const (
 
 type Game struct {
 	player *entities.Player
-	level  *components.Level
+	level  *level.Level
 }
 
 var timeToUpdate int64
@@ -44,6 +44,7 @@ func (g *Game) Update() error {
 
 func (g *Game) handleUpdate() {
 	g.player.Update()
+	g.level.CheckTileCollisions(g.player.GameObject)
 
 }
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -66,7 +67,7 @@ func main() {
 		log.Fatal("Player is nil!")
 	}
 
-	level := components.NewLevel("content/maps/map_1.json")
+	level := level.NewLevel("content/maps/map_1.json")
 
 	if err := ebiten.RunGame(&Game{
 		player: player,
