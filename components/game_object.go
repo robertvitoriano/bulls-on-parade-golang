@@ -21,31 +21,47 @@ type GameObject struct {
 	Velocity Velocity
 }
 
-func (gameObject *GameObject) Update() {
-	gameObject.Animator.Update()
+func (g *GameObject) Update() {
+	g.Animator.Update()
 }
 
-func (gameObject *GameObject) Draw(screen *ebiten.Image) {
-	gameObject.Animator.Draw(screen, gameObject.Position)
+func (g *GameObject) Draw(screen *ebiten.Image) {
+	g.Animator.Draw(screen, g.Position)
 }
 
-func (gameObject *GameObject) CollidesWith(other GameObject) bool {
-	return gameObject.GetRight() >= other.GetLeft() &&
-		gameObject.GetLeft() <= other.GetRight() &&
-		gameObject.GetTop() <= other.GetBottom() &&
-		gameObject.GetBottom() >= other.GetTop()
+func (g *GameObject) CollidesWith(other GameObject) bool {
+	return g.GetRight() >= other.GetLeft() &&
+		g.GetLeft() <= other.GetRight() &&
+		g.GetTop() <= other.GetBottom() &&
+		g.GetBottom() >= other.GetTop()
 }
 
-func (gameObject *GameObject) GetLeft() float64 {
-	return gameObject.Position.X
+func (g *GameObject) GetLeft() float64 {
+	return g.Position.X
 }
 
-func (gameObject *GameObject) GetRight() float64 {
-	return gameObject.Position.X + gameObject.Size.Width
+func (g *GameObject) GetRight() float64 {
+	return g.Position.X + g.Size.Width
 }
 
-func (gameObject *GameObject) GetTop() float64 { return gameObject.Position.Y }
+func (g *GameObject) GetTop() float64 { return g.Position.Y }
 
-func (gameObject *GameObject) GetBottom() float64 {
-	return gameObject.Position.Y + gameObject.Size.Height
+func (g *GameObject) GetBottom() float64 {
+	return g.Position.Y + g.Size.Height
+}
+
+func (g *GameObject) GetCollisionSide(other GameObject) string {
+
+	collisionSide := "NONE"
+
+	if g.GetRight() < other.GetRight() && g.GetBottom() >= other.GetTop() {
+		collisionSide = "RIGHT"
+	} else if g.GetLeft() > other.GetLeft() {
+		collisionSide = "LEFT"
+	} else if g.GetTop() > other.GetTop() && g.GetBottom() >= other.GetTop() {
+		collisionSide = "TOP"
+	} else if g.GetBottom() < other.GetBottom() {
+		collisionSide = "BOTTOM"
+	}
+	return collisionSide
 }
