@@ -153,64 +153,67 @@ func (l *Level) loadMap(levelData LevelData) {
 	}
 	for _, layer := range l.Layers {
 		if layer.Type == "tilelayer" {
+			l.storeTilesInLevel(layer)
+		}
+	}
+}
 
-			rows := int(layer.Height)
-			columns := int(layer.Width)
+func (l *Level) storeTilesInLevel(layer Layer) {
+	rows := int(layer.Height)
+	columns := int(layer.Width)
 
-			for row := 0; row < rows; row++ {
-				for column := 0; column < columns; column++ {
-					tileIndex := row*columns + column
+	for row := 0; row < rows; row++ {
+		for column := 0; column < columns; column++ {
+			tileIndex := row*columns + column
 
-					if tileIndex >= len(layer.Data) {
-						continue
-					}
+			if tileIndex >= len(layer.Data) {
+				continue
+			}
 
-					tileGID := layer.Data[tileIndex]
+			tileGID := layer.Data[tileIndex]
 
-					if tileGID == 0 {
-						continue
-					}
+			if tileGID == 0 {
+				continue
+			}
 
-					var currentTileset TileSet
-					var tilesetGID int
-					for _, tileset := range l.TileSets {
-						if tileGID >= tileset.FirstGID {
-							currentTileset = tileset
-							tilesetGID = tileset.FirstGID
-						}
-					}
-
-					if currentTileset.FirstGID == 0 {
-						continue
-					}
-
-					localID := tileGID - tilesetGID
-					tilesetX := (localID % currentTileset.Columns) * int(currentTileset.TileWidth)
-					tilesetY := (localID / currentTileset.Columns) * int(currentTileset.TileHeight)
-
-					tileImg := l.TilesetImages[tilesetGID].SubImage(image.Rect(
-						tilesetX,
-						tilesetY,
-						tilesetX+int(currentTileset.TileWidth),
-						tilesetY+int(currentTileset.TileHeight),
-					)).(*ebiten.Image)
-
-					l.tiles = append(l.tiles, Tile{
-
-						GameObject: components.GameObject{
-							Position: components.Position{
-								X: float64(column) * l.TileWidth,
-								Y: float64(row) * l.TileHeight,
-							},
-							Size: components.Size{
-								Width:  currentTileset.TileWidth,
-								Height: currentTileset.TileHeight,
-							},
-						},
-						image: tileImg,
-					})
+			var currentTileset TileSet
+			var tilesetGID int
+			for _, tileset := range l.TileSets {
+				if tileGID >= tileset.FirstGID {
+					currentTileset = tileset
+					tilesetGID = tileset.FirstGID
 				}
 			}
+
+			if currentTileset.FirstGID == 0 {
+				continue
+			}
+
+			localID := tileGID - tilesetGID
+			tilesetX := (localID % currentTileset.Columns) * int(currentTileset.TileWidth)
+			tilesetY := (localID / currentTileset.Columns) * int(currentTileset.TileHeight)
+
+			tileImg := l.TilesetImages[tilesetGID].SubImage(image.Rect(
+				tilesetX,
+				tilesetY,
+				tilesetX+int(currentTileset.TileWidth),
+				tilesetY+int(currentTileset.TileHeight),
+			)).(*ebiten.Image)
+
+			l.tiles = append(l.tiles, Tile{
+
+				GameObject: components.GameObject{
+					Position: components.Position{
+						X: float64(column) * l.TileWidth,
+						Y: float64(row) * l.TileHeight,
+					},
+					Size: components.Size{
+						Width:  currentTileset.TileWidth,
+						Height: currentTileset.TileHeight,
+					},
+				},
+				image: tileImg,
+			})
 		}
 	}
 }
