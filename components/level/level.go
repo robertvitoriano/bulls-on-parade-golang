@@ -253,10 +253,14 @@ func (l *Level) Draw(screen *ebiten.Image) {
 		collision.DebugDraw(screen)
 	}
 }
-func (l *Level) CheckTileCollisions(other components.GameObject) {
-	for index, collision := range l.collisions {
+func (l *Level) GetLevelCollisions(other components.GameObject) []Collision {
+
+	collisions := []Collision{}
+
+	for _, collision := range l.collisions {
 		if collision.GameObject.CollidesWith(other) {
-			fmt.Println("Collided with collision ", index)
+			collisions = append(collisions, collision)
 		}
 	}
+	return collisions
 }

@@ -1,14 +1,21 @@
 package entities
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components"
+	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
 )
 
+const VELOCITY = 2
+
+type Velocity struct {
+	x float64
+	y float64
+}
 type Player struct {
-	GameObject components.GameObject
+	GameObject   components.GameObject
+	velocity     Velocity
+	collidedSide string
 }
 
 func NewPlayer() *Player {
@@ -21,6 +28,11 @@ func NewPlayer() *Player {
 				Height: 16,
 			},
 		},
+		velocity: Velocity{
+			x: VELOCITY,
+			y: VELOCITY,
+		},
+		collidedSide: "NONE",
 	}
 
 	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
@@ -75,25 +87,48 @@ func (p *Player) Draw(screen *ebiten.Image) {
 
 func (p *Player) MoveRight() {
 	p.GameObject.Animator.ChangeAnimation("walk-right")
-	p.GameObject.Position.X++
+
+	if p.collidedSide != "RIGHT" {
+		p.velocity.x = VELOCITY
+	}
+
+	p.GameObject.Position.X += p.velocity.x
 
 }
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
-	p.GameObject.Position.X--
+	if p.collidedSide != "LEFT" {
+		p.velocity.x = VELOCITY
+	}
+	p.GameObject.Position.X -= p.velocity.x
 
 }
 func (p *Player) MoveUp() {
 	p.GameObject.Animator.ChangeAnimation("walk-up")
-	p.GameObject.Position.Y--
+	if p.collidedSide != "BOTTOM" {
+		p.velocity.x = VELOCITY
+	}
+	p.GameObject.Position.Y -= p.velocity.y
 
 }
 func (p *Player) MoveDown() {
 	p.GameObject.Animator.ChangeAnimation("walk-down")
-	p.GameObject.Position.Y++
+	if p.collidedSide != "TOP" {
+		p.velocity.x = VELOCITY
+	}
+	p.GameObject.Position.Y += p.velocity.y
 
 }
 
-func (p *Player) HandleTileCollision() {
-	fmt.Println("Collided with player")
+func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
+	for _, collision := range collisions {
+
+		if p.GameObject.GetRight() < collision.GameObject.GetRight() {
+			p.collidedSide = "RIGHT"
+			p.velocity.x = 0
+		} else if p.GameObject.GetLeft() < collision.GameObject.GetLeft() {
+			p.collidedSide = "LEFT"
+			p.velocity.x = 0
+		}
+	}
 }

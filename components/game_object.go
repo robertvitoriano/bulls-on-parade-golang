@@ -25,22 +25,22 @@ func (gameObject *GameObject) Draw(screen *ebiten.Image) {
 }
 
 func (gameObject *GameObject) CollidesWith(other GameObject) bool {
-	return gameObject.getRight() >= other.getLeft() &&
-		gameObject.getLeft() <= other.getRight() &&
-		gameObject.getTop() <= other.getBottom() &&
-		gameObject.getBottom() >= other.getTop()
+	return gameObject.GetRight() >= other.GetLeft() &&
+		gameObject.GetLeft() <= other.GetRight() &&
+		gameObject.GetTop() <= other.GetBottom() &&
+		gameObject.GetBottom() >= other.GetTop()
 }
 
-func (gameObject *GameObject) getLeft() float64 {
+func (gameObject *GameObject) GetLeft() float64 {
 	return gameObject.Position.X
 }
 
-func (gameObject *GameObject) getRight() float64 {
+func (gameObject *GameObject) GetRight() float64 {
 	return gameObject.Position.X + gameObject.Size.Width
 }
 
-func (gameObject *GameObject) getTop() float64 { return gameObject.Position.Y }
+func (gameObject *GameObject) GetTop() float64 { return gameObject.Position.Y }
 
-func (gameObject *GameObject) getBottom() float64 {
+func (gameObject *GameObject) GetBottom() float64 {
 	return gameObject.Position.Y + gameObject.Size.Height
 }

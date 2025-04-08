@@ -44,7 +44,9 @@ func (g *Game) Update() error {
 
 func (g *Game) handleUpdate() {
 	g.player.Update()
-	g.level.CheckTileCollisions(g.player.GameObject)
+	collisions := g.level.GetLevelCollisions(g.player.GameObject)
+
+	g.player.HandleLevelCollisionsCollision(collisions)
 
 }
 func (g *Game) Draw(screen *ebiten.Image) {
