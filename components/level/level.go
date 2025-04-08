@@ -106,6 +106,7 @@ type Level struct {
 	TileSets      []TileSet
 	TilesetImages map[int]*ebiten.Image
 	tiles         []Tile
+	collisions    []Collision
 }
 
 func NewLevel(filePath string) *Level {
@@ -142,7 +143,6 @@ func (l *Level) loadMap(levelData LevelData) {
 	l.Layers = levelData.Layers
 	l.TileSets = levelData.TileSets
 
-	// Load tile images
 	for _, tileset := range levelData.TileSets {
 		img, _, err := ebitenutil.NewImageFromFile(tileset.Image)
 		if err != nil {
@@ -153,12 +153,31 @@ func (l *Level) loadMap(levelData LevelData) {
 	}
 	for _, layer := range l.Layers {
 		if layer.Type == "tilelayer" {
-			l.storeTilesInLevel(layer)
+			l.addTilesToLevel(layer)
+		} else if layer.Type == "objectgroup" {
+			l.addObjectsToLevel(layer)
 		}
 	}
 }
-
-func (l *Level) storeTilesInLevel(layer Layer) {
+func (l *Level) addObjectsToLevel(layer Layer) {
+	for _, object := range layer.Objects {
+		if layer.Name == "collisions" {
+			l.collisions = append(l.collisions, Collision{
+				GameObject: components.GameObject{
+					Position: components.Position{
+						X: object.X,
+						Y: object.Y,
+					},
+					Size: components.Size{
+						Width:  object.Width,
+						Height: object.Height,
+					},
+				},
+			})
+		}
+	}
+}
+func (l *Level) addTilesToLevel(layer Layer) {
 	rows := int(layer.Height)
 	columns := int(layer.Width)
 
@@ -224,12 +243,9 @@ func (l *Level) Draw(screen *ebiten.Image) {
 	}
 }
 func (l *Level) CheckTileCollisions(other components.GameObject) {
-
-	//use collisions here, each collision is a game object
-	for index, tile := range l.tiles {
-		if tile.GameObject.CollidesWith(other) {
-			fmt.Println("Collided with tile ", index)
+	for index, collision := range l.collisions {
+		if collision.GameObject.CollidesWith(other) {
+			fmt.Println("Collided with collision ", index)
 		}
-
 	}
 }
