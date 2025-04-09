@@ -21,6 +21,16 @@ type GameObject struct {
 	Velocity Velocity
 }
 
+type CollisionSide string
+
+const (
+	CollisionNone   CollisionSide = "NONE"
+	CollisionRight  CollisionSide = "RIGHT"
+	CollisionLeft   CollisionSide = "LEFT"
+	CollisionTop    CollisionSide = "TOP"
+	CollisionBottom CollisionSide = "BOTTOM"
+)
+
 func (g *GameObject) Update() {
 	g.Animator.Update()
 }
@@ -50,7 +60,7 @@ func (g *GameObject) GetBottom() float64 {
 	return g.Position.Y + g.Size.Height
 }
 
-func (g *GameObject) GetCollisionSide(other GameObject) string {
+func (g *GameObject) GetCollisionSide(other GameObject) CollisionSide {
 	centerAX := g.Position.X + g.Size.Width/2
 	centerAY := g.Position.Y + g.Size.Height/2
 	centerBX := other.Position.X + other.Size.Width/2
@@ -61,7 +71,7 @@ func (g *GameObject) GetCollisionSide(other GameObject) string {
 	overlapX := (g.Size.Width+other.Size.Width)/2 - abs(horizontalCenterDistance)
 
 	if overlapX <= 0 {
-		return "NONE"
+		return CollisionNone
 	}
 
 	verticalCenterDistance := centerBY - centerAY
@@ -69,19 +79,19 @@ func (g *GameObject) GetCollisionSide(other GameObject) string {
 	overlapY := (g.Size.Height+other.Size.Height)/2 - abs(verticalCenterDistance)
 
 	if overlapY <= 0 {
-		return "NONE"
+		return CollisionNone
 	}
 
 	if overlapX < overlapY {
 		if horizontalCenterDistance > 0 {
-			return "RIGHT"
+			return CollisionRight
 		}
-		return "LEFT"
+		return CollisionLeft
 	} else {
 		if verticalCenterDistance > 0 {
-			return "BOTTOM"
+			return CollisionBottom
 		}
-		return "TOP"
+		return CollisionTop
 	}
 }
 

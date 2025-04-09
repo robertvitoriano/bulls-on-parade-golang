@@ -7,12 +7,12 @@ import (
 )
 
 const VELOCITY = 2
-const GRAVITY float64 = 30
+const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
 
 type Player struct {
 	GameObject   components.GameObject
-	collidedSide string
+	collidedSide components.CollisionSide
 }
 
 func NewPlayer() *Player {
@@ -29,7 +29,7 @@ func NewPlayer() *Player {
 				Y: VELOCITY,
 			},
 		},
-		collidedSide: "NONE",
+		collidedSide: components.CollisionNone,
 	}
 
 	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
@@ -64,7 +64,7 @@ func NewPlayer() *Player {
 func (p *Player) Update() {
 	p.GameObject.Update()
 	p.Move()
-	if p.collidedSide != "BOTTOM" {
+	if p.collidedSide != components.CollisionBottom {
 		p.GameObject.Position.Y += GRAVITY * GRAVITY_SMOTHING
 	}
 }
@@ -79,7 +79,7 @@ func (p *Player) Move() {
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		p.MoveDown()
 	}
-	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == "BOTTOM" {
+	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == components.CollisionBottom {
 		p.Jump()
 	}
 }
@@ -91,7 +91,7 @@ func (p *Player) Draw(screen *ebiten.Image) {
 func (p *Player) MoveRight() {
 	p.GameObject.Animator.ChangeAnimation("walk-right")
 
-	if p.collidedSide != "RIGHT" {
+	if p.collidedSide != components.CollisionRight {
 		p.GameObject.Velocity.X = VELOCITY
 	}
 
@@ -99,12 +99,12 @@ func (p *Player) MoveRight() {
 
 }
 func (p *Player) Jump() {
-	p.GameObject.Position.Y -= 20
+	p.GameObject.Position.Y -= 35
 
 }
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
-	if p.collidedSide != "LEFT" {
+	if p.collidedSide != components.CollisionLeft {
 		p.GameObject.Velocity.X = VELOCITY
 	}
 	p.GameObject.Position.X -= p.GameObject.Velocity.X
@@ -112,7 +112,7 @@ func (p *Player) MoveLeft() {
 }
 func (p *Player) MoveUp() {
 	p.GameObject.Animator.ChangeAnimation("walk-up")
-	if p.collidedSide != "TOP" {
+	if p.collidedSide != components.CollisionTop {
 		p.GameObject.Velocity.Y = VELOCITY
 	}
 	p.GameObject.Position.Y -= p.GameObject.Velocity.Y
@@ -120,7 +120,7 @@ func (p *Player) MoveUp() {
 }
 func (p *Player) MoveDown() {
 	p.GameObject.Animator.ChangeAnimation("walk-down")
-	if p.collidedSide != "BOTTOM" {
+	if p.collidedSide != components.CollisionBottom {
 		p.GameObject.Velocity.Y = VELOCITY
 	}
 	p.GameObject.Position.Y += p.GameObject.Velocity.Y
@@ -128,28 +128,28 @@ func (p *Player) MoveDown() {
 }
 
 func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
-	p.collidedSide = "NONE"
+	p.collidedSide = components.CollisionNone
 
 	for _, collision := range collisions {
 
 		switch p.GameObject.GetCollisionSide(collision.GameObject) {
-		case "RIGHT":
-			p.collidedSide = "RIGHT"
+		case components.CollisionRight:
+			p.collidedSide = components.CollisionRight
 			p.GameObject.Position.X = collision.GameObject.GetLeft() - p.GameObject.Size.Width
 			p.GameObject.Velocity.X = 0
 
-		case "LEFT":
-			p.collidedSide = "LEFT"
+		case components.CollisionLeft:
+			p.collidedSide = components.CollisionLeft
 			p.GameObject.Position.X = collision.GameObject.GetRight()
 			p.GameObject.Velocity.X = 0
 
-		case "TOP":
-			p.collidedSide = "TOP"
+		case components.CollisionTop:
+			p.collidedSide = components.CollisionTop
 			p.GameObject.Position.Y = collision.GameObject.GetBottom()
 			p.GameObject.Velocity.Y = 0
 
-		case "BOTTOM":
-			p.collidedSide = "BOTTOM"
+		case components.CollisionBottom:
+			p.collidedSide = components.CollisionBottom
 			p.GameObject.Position.Y = collision.GameObject.GetTop() - p.GameObject.Size.Height
 			p.GameObject.Velocity.Y = 0
 		}
