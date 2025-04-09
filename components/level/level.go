@@ -255,9 +255,9 @@ func (l *Level) Draw(screen *ebiten.Image) {
 	for _, tile := range l.tiles {
 		tile.draw(screen)
 	}
-	// for _, collision := range l.collisions {
-	// 	// collision.DebugDraw(screen)
-	// }
+	for _, collision := range l.collisions {
+		collision.DebugDraw(screen)
+	}
 }
 func (l *Level) GetLevelCollisions(other components.GameObject) []Collision {
 
