@@ -51,19 +51,43 @@ func (g *GameObject) GetBottom() float64 {
 }
 
 func (g *GameObject) GetCollisionSide(other GameObject) string {
+	centerAX := g.Position.X + g.Size.Width/2
+	centerAY := g.Position.Y + g.Size.Height/2
+	centerBX := other.Position.X + other.Size.Width/2
+	centerBY := other.Position.Y + other.Size.Height/2
 
-	collisionSide := "NONE"
+	horizontalCenterDistance := centerBX - centerAX
 
-	isHorizontalCollision := g.GetBottom() >= other.GetTop() && g.GetBottom() <= other.GetBottom()
+	overlapX := (g.Size.Width+other.Size.Width)/2 - abs(horizontalCenterDistance)
 
-	if g.GetRight() < other.GetRight() && isHorizontalCollision {
-		collisionSide = "RIGHT"
-	} else if g.GetLeft() > other.GetLeft() && isHorizontalCollision {
-		collisionSide = "LEFT"
-	} else if g.GetTop() <= other.GetBottom() && !isHorizontalCollision {
-		collisionSide = "TOP"
-	} else if g.GetBottom() >= other.GetTop() && !isHorizontalCollision {
-		collisionSide = "BOTTOM"
+	if overlapX <= 0 {
+		return "NONE"
 	}
-	return collisionSide
+
+	verticalCenterDistance := centerBY - centerAY
+
+	overlapY := (g.Size.Height+other.Size.Height)/2 - abs(verticalCenterDistance)
+
+	if overlapY <= 0 {
+		return "NONE"
+	}
+
+	if overlapX < overlapY {
+		if horizontalCenterDistance > 0 {
+			return "RIGHT"
+		}
+		return "LEFT"
+	} else {
+		if verticalCenterDistance > 0 {
+			return "BOTTOM"
+		}
+		return "TOP"
+	}
+}
+
+func abs(f float64) float64 {
+	if f < 0 {
+		return -f
+	}
+	return f
 }

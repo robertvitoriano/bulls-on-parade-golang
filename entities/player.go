@@ -1,8 +1,6 @@
 package entities
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
@@ -118,49 +116,31 @@ func (p *Player) MoveDown() {
 }
 
 func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
+	p.collidedSide = "NONE"
 
 	for _, collision := range collisions {
 
 		switch p.GameObject.GetCollisionSide(collision.GameObject) {
 		case "RIGHT":
-			{
-				fmt.Println("COLLIDED ON THE RIGHT")
-				p.collidedSide = "RIGHT"
-				p.GameObject.Velocity.X = 0
+			p.collidedSide = "RIGHT"
+			p.GameObject.Position.X = collision.GameObject.GetLeft() - p.GameObject.Size.Width
+			p.GameObject.Velocity.X = 0
 
-				break
-			}
 		case "LEFT":
-			{
-				fmt.Println("COLLIDED ON THE left")
+			p.collidedSide = "LEFT"
+			p.GameObject.Position.X = collision.GameObject.GetRight()
+			p.GameObject.Velocity.X = 0
 
-				p.collidedSide = "LEFT"
-				p.GameObject.Velocity.X = 0
-
-				break
-			}
 		case "TOP":
-			{
-				fmt.Println("COLLIDED ON THE TOP")
+			p.collidedSide = "TOP"
+			p.GameObject.Position.Y = collision.GameObject.GetBottom()
+			p.GameObject.Velocity.Y = 0
 
-				p.collidedSide = "TOP"
-				p.GameObject.Velocity.Y = 0
-
-				break
-			}
 		case "BOTTOM":
-			{
-				fmt.Println("COLLIDED ON THE BOTTOM")
-
-				p.collidedSide = "BOTTOM"
-				p.GameObject.Velocity.Y = 0
-
-				break
-			}
-		case "NONE":
-			{
-				fmt.Println("NO COLLISION HAPPENED")
-			}
+			p.collidedSide = "BOTTOM"
+			p.GameObject.Position.Y = collision.GameObject.GetTop() - p.GameObject.Size.Height
+			p.GameObject.Velocity.Y = 0
 		}
+
 	}
 }
