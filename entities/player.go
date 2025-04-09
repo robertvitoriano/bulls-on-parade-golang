@@ -127,7 +127,7 @@ func (p *Player) MoveDown() {
 
 }
 
-func (p *Player) HandleLevelCollisionsCollision(collisions []level.Collision) {
+func (p *Player) HandleLevelCollisions(collisions []level.Collision) {
 	p.collidedSide = components.CollisionNone
 
 	for _, collision := range collisions {

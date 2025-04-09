@@ -46,7 +46,7 @@ func (g *Game) handleUpdate() {
 	g.player.Update()
 	collisions := g.level.GetLevelCollisions(g.player.GameObject)
 
-	g.player.HandleLevelCollisionsCollision(collisions)
+	g.player.HandleLevelCollisions(collisions)
 
 }
 func (g *Game) Draw(screen *ebiten.Image) {
