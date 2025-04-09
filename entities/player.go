@@ -6,7 +6,9 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
 )
 
-const VELOCITY = 10
+const VELOCITY = 2
+const GRAVITY float64 = 30
+const GRAVITY_SMOTHING float64 = .4541561
 
 type Player struct {
 	GameObject   components.GameObject
@@ -62,6 +64,9 @@ func NewPlayer() *Player {
 func (p *Player) Update() {
 	p.GameObject.Update()
 	p.Move()
+	if p.collidedSide != "BOTTOM" {
+		p.GameObject.Position.Y += GRAVITY * GRAVITY_SMOTHING
+	}
 }
 
 func (p *Player) Move() {
@@ -73,6 +78,9 @@ func (p *Player) Move() {
 		p.MoveUp()
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		p.MoveDown()
+	}
+	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == "BOTTOM" {
+		p.Jump()
 	}
 }
 
@@ -88,6 +96,10 @@ func (p *Player) MoveRight() {
 	}
 
 	p.GameObject.Position.X += p.GameObject.Velocity.X
+
+}
+func (p *Player) Jump() {
+	p.GameObject.Position.Y -= 20
 
 }
 func (p *Player) MoveLeft() {

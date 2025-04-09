@@ -71,6 +71,8 @@ func main() {
 
 	level := level.NewLevel("content/maps/map_1.json")
 
+	player.GameObject.Position = level.PlayerSpawnPosition
+
 	if err := ebiten.RunGame(&Game{
 		player: player,
 		level:  level,

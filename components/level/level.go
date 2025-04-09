@@ -97,17 +97,18 @@ type LevelData struct {
 	TileSets         []TileSet `json:"tilesets"`
 }
 type Level struct {
-	Width         float64
-	Height        float64
-	TileWidth     float64
-	TileHeight    float64
-	X             float64
-	Y             float64
-	Layers        []Layer
-	TileSets      []TileSet
-	TilesetImages map[int]*ebiten.Image
-	tiles         []Tile
-	collisions    []Collision
+	Width               float64
+	Height              float64
+	TileWidth           float64
+	TileHeight          float64
+	X                   float64
+	Y                   float64
+	Layers              []Layer
+	TileSets            []TileSet
+	TilesetImages       map[int]*ebiten.Image
+	tiles               []Tile
+	collisions          []Collision
+	PlayerSpawnPosition components.Position
 }
 
 func NewLevel(filePath string) *Level {
@@ -182,6 +183,11 @@ func (l *Level) addObjectsToLevel(layer Layer) {
 					},
 				},
 			})
+		} else if layer.Name == "spawn points" {
+			l.PlayerSpawnPosition = components.Position{
+				X: object.X,
+				Y: object.Y,
+			}
 		}
 	}
 }
