@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
 	"github.com/robertvitoriano/bulls-on-parade-golang/entities"
+	"github.com/robertvitoriano/bulls-on-parade-golang/level"
 )
 
 const (

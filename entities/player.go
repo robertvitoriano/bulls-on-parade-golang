@@ -3,7 +3,7 @@ package entities
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components"
-	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
+	"github.com/robertvitoriano/bulls-on-parade-golang/level"
 )
 
 const VELOCITY = 2
