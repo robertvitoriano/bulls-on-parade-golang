@@ -8,7 +8,7 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/components/level"
 )
 
-const VELOCITY = 2
+const VELOCITY = 10
 
 type Player struct {
 	GameObject   components.GameObject

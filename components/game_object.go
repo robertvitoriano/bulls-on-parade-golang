@@ -54,13 +54,15 @@ func (g *GameObject) GetCollisionSide(other GameObject) string {
 
 	collisionSide := "NONE"
 
-	if g.GetRight() < other.GetRight() && g.GetBottom() >= other.GetTop() {
+	isHorizontalCollision := g.GetBottom() >= other.GetTop() && g.GetBottom() <= other.GetBottom()
+
+	if g.GetRight() < other.GetRight() && isHorizontalCollision {
 		collisionSide = "RIGHT"
-	} else if g.GetLeft() > other.GetLeft() {
+	} else if g.GetLeft() > other.GetLeft() && isHorizontalCollision {
 		collisionSide = "LEFT"
-	} else if g.GetTop() > other.GetTop() && g.GetBottom() >= other.GetTop() {
+	} else if g.GetTop() <= other.GetBottom() && !isHorizontalCollision {
 		collisionSide = "TOP"
-	} else if g.GetBottom() < other.GetBottom() {
+	} else if g.GetBottom() >= other.GetTop() && !isHorizontalCollision {
 		collisionSide = "BOTTOM"
 	}
 	return collisionSide
