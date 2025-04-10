@@ -8,6 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/robertvitoriano/bulls-on-parade-golang/entities"
 	"github.com/robertvitoriano/bulls-on-parade-golang/level"
+	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
 const (
@@ -59,7 +60,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
+	ebiten.SetWindowSize(screenWidth*utils.SCALE, screenHeight*utils.SCALE)
 
 	ebiten.SetWindowTitle("Animation")
 

@@ -9,10 +9,13 @@ import (
 const VELOCITY = 2
 const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
+const JUMP_VELOCITY float64 = 40
+const FALL_VELOCITY float64 = GRAVITY / 2
 
 type Player struct {
 	GameObject   components.GameObject
 	collidedSide components.CollisionSide
+	isJumping    bool
 }
 
 func NewPlayer() *Player {
@@ -64,7 +67,16 @@ func NewPlayer() *Player {
 func (p *Player) Update() {
 	p.GameObject.Update()
 	p.Move()
+	p.handleGravity()
+}
+
+func (p *Player) handleGravity() {
 	if p.collidedSide != components.CollisionBottom {
+		if p.isJumping {
+			p.GameObject.Position.Y += FALL_VELOCITY * GRAVITY_SMOTHING
+			return
+		}
+		p.isJumping = false
 		p.GameObject.Position.Y += GRAVITY * GRAVITY_SMOTHING
 	}
 }
@@ -100,6 +112,7 @@ func (p *Player) MoveRight() {
 }
 func (p *Player) Jump() {
 	p.GameObject.Position.Y -= 35
+	p.isJumping = true
 
 }
 func (p *Player) MoveLeft() {
