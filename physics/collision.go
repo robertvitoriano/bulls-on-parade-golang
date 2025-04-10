@@ -1,4 +1,4 @@
-package level
+package physics
 
 import (
 	"image/color"

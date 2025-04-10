@@ -3,10 +3,11 @@ package entities
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components"
-	"github.com/robertvitoriano/bulls-on-parade-golang/level"
+	"github.com/robertvitoriano/bulls-on-parade-golang/physics"
+	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
-const VELOCITY = 2
+const VELOCITY = 2.5
 const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
 const JUMP_VELOCITY float64 = 40
@@ -14,7 +15,7 @@ const FALL_VELOCITY float64 = GRAVITY / 2
 
 type Player struct {
 	GameObject   components.GameObject
-	collidedSide components.CollisionSide
+	collidedSide utils.CollisionSide
 	isJumping    bool
 }
 
@@ -22,17 +23,17 @@ func NewPlayer() *Player {
 	player := &Player{
 		GameObject: components.GameObject{
 			Animator: components.Animator{},
-			Position: components.Position{},
-			Size: components.Size{
+			Position: utils.Position{},
+			Size: utils.Size{
 				Width:  16,
 				Height: 16,
 			},
-			Velocity: components.Velocity{
+			Velocity: utils.Velocity{
 				X: VELOCITY,
 				Y: VELOCITY,
 			},
 		},
-		collidedSide: components.CollisionNone,
+		collidedSide: utils.CollisionNone,
 	}
 
 	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
@@ -71,7 +72,7 @@ func (p *Player) Update() {
 }
 
 func (p *Player) handleGravity() {
-	if p.collidedSide != components.CollisionBottom {
+	if p.collidedSide != utils.CollisionBottom {
 		if p.isJumping {
 			p.GameObject.Position.Y += FALL_VELOCITY * GRAVITY_SMOTHING
 			return
@@ -91,7 +92,7 @@ func (p *Player) Move() {
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		p.MoveDown()
 	}
-	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == components.CollisionBottom {
+	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
 		p.Jump()
 	}
 }
@@ -103,7 +104,7 @@ func (p *Player) Draw(screen *ebiten.Image) {
 func (p *Player) MoveRight() {
 	p.GameObject.Animator.ChangeAnimation("walk-right")
 
-	if p.collidedSide != components.CollisionRight {
+	if p.collidedSide != utils.CollisionRight {
 		p.GameObject.Velocity.X = VELOCITY
 	}
 
@@ -117,7 +118,7 @@ func (p *Player) Jump() {
 }
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
-	if p.collidedSide != components.CollisionLeft {
+	if p.collidedSide != utils.CollisionLeft {
 		p.GameObject.Velocity.X = VELOCITY
 	}
 	p.GameObject.Position.X -= p.GameObject.Velocity.X
@@ -125,7 +126,7 @@ func (p *Player) MoveLeft() {
 }
 func (p *Player) MoveUp() {
 	p.GameObject.Animator.ChangeAnimation("walk-up")
-	if p.collidedSide != components.CollisionTop {
+	if p.collidedSide != utils.CollisionTop {
 		p.GameObject.Velocity.Y = VELOCITY
 	}
 	p.GameObject.Position.Y -= p.GameObject.Velocity.Y
@@ -133,36 +134,36 @@ func (p *Player) MoveUp() {
 }
 func (p *Player) MoveDown() {
 	p.GameObject.Animator.ChangeAnimation("walk-down")
-	if p.collidedSide != components.CollisionBottom {
+	if p.collidedSide != utils.CollisionBottom {
 		p.GameObject.Velocity.Y = VELOCITY
 	}
 	p.GameObject.Position.Y += p.GameObject.Velocity.Y
 
 }
 
-func (p *Player) HandleLevelCollisions(collisions []level.Collision) {
-	p.collidedSide = components.CollisionNone
+func (p *Player) HandleLevelCollisions(collisions []*physics.Collision) {
+	p.collidedSide = utils.CollisionNone
 
 	for _, collision := range collisions {
 
 		switch p.GameObject.GetCollisionSide(collision.GameObject) {
-		case components.CollisionRight:
-			p.collidedSide = components.CollisionRight
+		case utils.CollisionRight:
+			p.collidedSide = utils.CollisionRight
 			p.GameObject.Position.X = collision.GameObject.GetLeft() - p.GameObject.Size.Width
 			p.GameObject.Velocity.X = 0
 
-		case components.CollisionLeft:
-			p.collidedSide = components.CollisionLeft
+		case utils.CollisionLeft:
+			p.collidedSide = utils.CollisionLeft
 			p.GameObject.Position.X = collision.GameObject.GetRight()
 			p.GameObject.Velocity.X = 0
 
-		case components.CollisionTop:
-			p.collidedSide = components.CollisionTop
+		case utils.CollisionTop:
+			p.collidedSide = utils.CollisionTop
 			p.GameObject.Position.Y = collision.GameObject.GetBottom()
 			p.GameObject.Velocity.Y = 0
 
-		case components.CollisionBottom:
-			p.collidedSide = components.CollisionBottom
+		case utils.CollisionBottom:
+			p.collidedSide = utils.CollisionBottom
 			p.GameObject.Position.Y = collision.GameObject.GetTop() - p.GameObject.Size.Height
 			p.GameObject.Velocity.Y = 0
 		}

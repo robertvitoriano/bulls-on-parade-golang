@@ -1,35 +1,16 @@
 package components
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
+)
 
-type Position struct {
-	X float64
-	Y float64
-}
-type Size struct {
-	Width  float64
-	Height float64
-}
-type Velocity struct {
-	X float64
-	Y float64
-}
 type GameObject struct {
 	Animator Animator
-	Position Position
-	Size     Size
-	Velocity Velocity
+	Position utils.Position
+	Size     utils.Size
+	Velocity utils.Velocity
 }
-
-type CollisionSide string
-
-const (
-	CollisionNone   CollisionSide = "NONE"
-	CollisionRight  CollisionSide = "RIGHT"
-	CollisionLeft   CollisionSide = "LEFT"
-	CollisionTop    CollisionSide = "TOP"
-	CollisionBottom CollisionSide = "BOTTOM"
-)
 
 func (g *GameObject) Update() {
 	g.Animator.Update()
@@ -60,7 +41,7 @@ func (g *GameObject) GetBottom() float64 {
 	return g.Position.Y + g.Size.Height
 }
 
-func (g *GameObject) GetCollisionSide(other GameObject) CollisionSide {
+func (g *GameObject) GetCollisionSide(other GameObject) utils.CollisionSide {
 	centerAX := g.Position.X + g.Size.Width/2
 	centerAY := g.Position.Y + g.Size.Height/2
 	centerBX := other.Position.X + other.Size.Width/2
@@ -71,7 +52,7 @@ func (g *GameObject) GetCollisionSide(other GameObject) CollisionSide {
 	overlapX := (g.Size.Width+other.Size.Width)/2 - abs(horizontalCenterDistance)
 
 	if overlapX <= 0 {
-		return CollisionNone
+		return utils.CollisionNone
 	}
 
 	verticalCenterDistance := centerBY - centerAY
@@ -79,20 +60,25 @@ func (g *GameObject) GetCollisionSide(other GameObject) CollisionSide {
 	overlapY := (g.Size.Height+other.Size.Height)/2 - abs(verticalCenterDistance)
 
 	if overlapY <= 0 {
-		return CollisionNone
+		return utils.CollisionNone
 	}
 
 	if overlapX < overlapY {
 		if horizontalCenterDistance > 0 {
-			return CollisionRight
+			return utils.CollisionRight
 		}
-		return CollisionLeft
+		return utils.CollisionLeft
 	} else {
 		if verticalCenterDistance > 0 {
-			return CollisionBottom
+			return utils.CollisionBottom
 		}
-		return CollisionTop
+		return utils.CollisionTop
 	}
+}
+
+func (g *GameObject) SetOffset(offset utils.Position) {
+	g.Position.X += offset.X
+	g.Position.Y += offset.Y
 }
 
 func abs(f float64) float64 {

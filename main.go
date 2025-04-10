@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	screenWidth  = 320
-	screenHeight = 256
-	fps          = 10
+	ScreenWidth  = 320
+	ScreenHeight = 256
+	FPS          = 10
 )
 
 type Game struct {
@@ -26,7 +26,7 @@ var timeToUpdate int64
 
 func (g *Game) Update() error {
 
-	durationPerFrame := time.Second / time.Duration(fps)
+	durationPerFrame := time.Second / time.Duration(FPS)
 	durationPerFrameMs := durationPerFrame.Milliseconds()
 
 	now := time.Now().UnixMilli()
@@ -46,8 +46,8 @@ func (g *Game) Update() error {
 func (g *Game) handleUpdate() {
 	g.player.Update()
 	collisions := g.level.GetLevelCollisions(g.player.GameObject)
-
 	g.player.HandleLevelCollisions(collisions)
+	g.level.Update()
 
 }
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -56,11 +56,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth, screenHeight
+	return ScreenWidth, ScreenHeight
 }
 
 func main() {
-	ebiten.SetWindowSize(screenWidth*utils.SCALE, screenHeight*utils.SCALE)
+	ebiten.SetWindowSize(ScreenWidth*utils.SCALE, ScreenHeight*utils.SCALE)
 
 	ebiten.SetWindowTitle("Animation")
 
@@ -70,7 +70,7 @@ func main() {
 		log.Fatal("Player is nil!")
 	}
 
-	level := level.NewLevel("content/maps/map_1.json")
+	level := level.NewLevel("content/maps/map_1.json", player)
 
 	player.GameObject.Position = level.PlayerSpawnPosition
 

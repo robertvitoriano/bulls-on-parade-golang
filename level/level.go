@@ -12,6 +12,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/robertvitoriano/bulls-on-parade-golang/components"
+	"github.com/robertvitoriano/bulls-on-parade-golang/entities"
+	"github.com/robertvitoriano/bulls-on-parade-golang/physics"
+	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
 type Animation struct {
@@ -106,12 +109,13 @@ type Level struct {
 	Layers              []Layer
 	TileSets            []TileSet
 	TilesetImages       map[int]*ebiten.Image
-	tiles               []Tile
-	collisions          []Collision
-	PlayerSpawnPosition components.Position
+	tiles               []*Tile
+	collisions          []*physics.Collision
+	PlayerSpawnPosition utils.Position
+	Player              *entities.Player
 }
 
-func NewLevel(filePath string) *Level {
+func NewLevel(filePath string, player *entities.Player) *Level {
 	jsonFile, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -131,6 +135,7 @@ func NewLevel(filePath string) *Level {
 
 	level := &Level{
 		TilesetImages: make(map[int]*ebiten.Image),
+		Player:        player,
 	}
 	level.loadMap(parsedData)
 
@@ -171,20 +176,20 @@ func (l *Level) loadMap(levelData LevelData) {
 func (l *Level) addObjectsToLevel(layer Layer) {
 	for _, object := range layer.Objects {
 		if layer.Name == "collisions" {
-			l.collisions = append(l.collisions, Collision{
+			l.collisions = append(l.collisions, &physics.Collision{
 				GameObject: components.GameObject{
-					Position: components.Position{
+					Position: utils.Position{
 						X: object.X,
 						Y: object.Y,
 					},
-					Size: components.Size{
+					Size: utils.Size{
 						Width:  object.Width,
 						Height: object.Height,
 					},
 				},
 			})
 		} else if layer.Name == "spawn points" {
-			l.PlayerSpawnPosition = components.Position{
+			l.PlayerSpawnPosition = utils.Position{
 				X: object.X,
 				Y: object.Y,
 			}
@@ -233,14 +238,14 @@ func (l *Level) addTilesToLevel(layer Layer) {
 				tilesetY+int(currentTileset.TileHeight),
 			)).(*ebiten.Image)
 
-			l.tiles = append(l.tiles, Tile{
+			l.tiles = append(l.tiles, &Tile{
 
 				GameObject: components.GameObject{
-					Position: components.Position{
+					Position: utils.Position{
 						X: float64(column) * l.TileWidth,
 						Y: float64(row) * l.TileHeight,
 					},
-					Size: components.Size{
+					Size: utils.Size{
 						Width:  currentTileset.TileWidth,
 						Height: currentTileset.TileHeight,
 					},
@@ -251,17 +256,37 @@ func (l *Level) addTilesToLevel(layer Layer) {
 	}
 }
 
+func (l *Level) Update() {
+	offset := &utils.Position{
+		X: 0,
+	}
+	for _, tile := range l.tiles {
+		tile.GameObject.SetOffset(utils.Position{
+			X: offset.X,
+			Y: 0.00,
+		})
+	}
+	for _, collision := range l.collisions {
+		collision.GameObject.SetOffset(utils.Position{
+			X: offset.X,
+			Y: 0.00,
+		})
+	}
+
+}
+
 func (l *Level) Draw(screen *ebiten.Image) {
+	fmt.Println("TILE X", l.tiles[0].GameObject.Position.X)
 	for _, tile := range l.tiles {
 		tile.draw(screen)
 	}
-	for _, collision := range l.collisions {
-		collision.DebugDraw(screen)
-	}
+	// for _, collision := range l.collisions {
+	// 	collision.DebugDraw(screen)
+	// }
 }
-func (l *Level) GetLevelCollisions(other components.GameObject) []Collision {
+func (l *Level) GetLevelCollisions(other components.GameObject) []*physics.Collision {
 
-	collisions := []Collision{}
+	collisions := []*physics.Collision{}
 
 	for _, collision := range l.collisions {
 		if collision.GameObject.CollidesWith(other) {
