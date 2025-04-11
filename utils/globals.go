@@ -7,7 +7,7 @@ const (
 	SCALE        = 2
 )
 
-type Position struct {
+type Vector2 struct {
 	X float64
 	Y float64
 }
@@ -15,10 +15,7 @@ type Size struct {
 	Width  float64
 	Height float64
 }
-type Velocity struct {
-	X float64
-	Y float64
-}
+
 type CollisionSide string
 
 const (

@@ -79,7 +79,7 @@ func (a *Animator) Update() {
 	a.currentFrameIndex = (a.currentFrameIndex + 1) % len(a.animations[a.currentAnimation])
 }
 
-func (a *Animator) Draw(screen *ebiten.Image, position utils.Position) {
+func (a *Animator) Draw(screen *ebiten.Image, position utils.Vector2) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(position.X, position.Y)
 

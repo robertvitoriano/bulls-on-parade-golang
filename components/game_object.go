@@ -7,9 +7,9 @@ import (
 
 type GameObject struct {
 	Animator Animator
-	Position utils.Position
+	Position utils.Vector2
 	Size     utils.Size
-	Velocity utils.Velocity
+	Velocity utils.Vector2
 }
 
 func (g *GameObject) Update() {
@@ -76,7 +76,7 @@ func (g *GameObject) GetCollisionSide(other GameObject) utils.CollisionSide {
 	}
 }
 
-func (g *GameObject) SetOffset(offset utils.Position) {
+func (g *GameObject) SetOffset(offset utils.Vector2) {
 	g.Position.X += offset.X
 	g.Position.Y += offset.Y
 }

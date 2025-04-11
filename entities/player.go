@@ -7,33 +7,38 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
-const VELOCITY = 2.5
+const SPEED = 2.5
 const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
-const JUMP_VELOCITY float64 = 40
-const FALL_VELOCITY float64 = GRAVITY / 2
+const JUMP_SPEED float64 = 40
+const FALL_SPEED float64 = GRAVITY / 2
 
 type Player struct {
-	GameObject   components.GameObject
-	collidedSide utils.CollisionSide
-	isJumping    bool
+	GameObject       components.GameObject
+	collidedSide     utils.CollisionSide
+	isJumping        bool
+	XMovementEnabled bool
 }
 
 func NewPlayer() *Player {
 	player := &Player{
 		GameObject: components.GameObject{
 			Animator: components.Animator{},
-			Position: utils.Position{},
+			Position: utils.Vector2{
+				X: 0,
+				Y: 0,
+			},
 			Size: utils.Size{
 				Width:  16,
 				Height: 16,
 			},
-			Velocity: utils.Velocity{
-				X: VELOCITY,
-				Y: VELOCITY,
+			Velocity: utils.Vector2{
+				X: 0,
+				Y: 0,
 			},
 		},
-		collidedSide: utils.CollisionNone,
+		collidedSide:     utils.CollisionNone,
+		XMovementEnabled: true,
 	}
 
 	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
@@ -74,7 +79,7 @@ func (p *Player) Update() {
 func (p *Player) handleGravity() {
 	if p.collidedSide != utils.CollisionBottom {
 		if p.isJumping {
-			p.GameObject.Position.Y += FALL_VELOCITY * GRAVITY_SMOTHING
+			p.GameObject.Position.Y += FALL_SPEED * GRAVITY_SMOTHING
 			return
 		}
 		p.isJumping = false
@@ -105,9 +110,11 @@ func (p *Player) MoveRight() {
 	p.GameObject.Animator.ChangeAnimation("walk-right")
 
 	if p.collidedSide != utils.CollisionRight {
-		p.GameObject.Velocity.X = VELOCITY
+		p.GameObject.Velocity.X = SPEED
 	}
-
+	if !p.XMovementEnabled {
+		return
+	}
 	p.GameObject.Position.X += p.GameObject.Velocity.X
 
 }
@@ -118,25 +125,31 @@ func (p *Player) Jump() {
 }
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
+
 	if p.collidedSide != utils.CollisionLeft {
-		p.GameObject.Velocity.X = VELOCITY
+		p.GameObject.Velocity.X = -SPEED
 	}
-	p.GameObject.Position.X -= p.GameObject.Velocity.X
+	if !p.XMovementEnabled {
+		return
+	}
+	p.GameObject.Position.X += p.GameObject.Velocity.X
 
 }
 func (p *Player) MoveUp() {
 	p.GameObject.Animator.ChangeAnimation("walk-up")
 	if p.collidedSide != utils.CollisionTop {
-		p.GameObject.Velocity.Y = VELOCITY
+		p.GameObject.Velocity.Y = SPEED
 	}
+
 	p.GameObject.Position.Y -= p.GameObject.Velocity.Y
 
 }
 func (p *Player) MoveDown() {
 	p.GameObject.Animator.ChangeAnimation("walk-down")
 	if p.collidedSide != utils.CollisionBottom {
-		p.GameObject.Velocity.Y = VELOCITY
+		p.GameObject.Velocity.Y = SPEED
 	}
+
 	p.GameObject.Position.Y += p.GameObject.Velocity.Y
 
 }

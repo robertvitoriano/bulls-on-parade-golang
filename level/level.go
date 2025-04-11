@@ -6,6 +6,7 @@ import (
 	"image"
 	"io"
 	"log"
+	"math"
 	"os"
 	"strings"
 
@@ -111,8 +112,10 @@ type Level struct {
 	TilesetImages       map[int]*ebiten.Image
 	tiles               []*Tile
 	collisions          []*physics.Collision
-	PlayerSpawnPosition utils.Position
+	PlayerSpawnPosition utils.Vector2
 	Player              *entities.Player
+	MaxScroll           utils.Vector2
+	CurrentScroll       utils.Vector2
 }
 
 func NewLevel(filePath string, player *entities.Player) *Level {
@@ -149,7 +152,7 @@ func (l *Level) loadMap(levelData LevelData) {
 	l.TileHeight = float64(levelData.TileHeight)
 	l.Layers = levelData.Layers
 	l.TileSets = levelData.TileSets
-
+	l.MaxScroll.X = l.TileWidth*l.Width - utils.ScreenWidth
 	for _, tileset := range levelData.TileSets {
 
 		tileSetImagePrefix := "content/tilesets/"
@@ -178,7 +181,7 @@ func (l *Level) addObjectsToLevel(layer Layer) {
 		if layer.Name == "collisions" {
 			l.collisions = append(l.collisions, &physics.Collision{
 				GameObject: components.GameObject{
-					Position: utils.Position{
+					Position: utils.Vector2{
 						X: object.X,
 						Y: object.Y,
 					},
@@ -189,7 +192,7 @@ func (l *Level) addObjectsToLevel(layer Layer) {
 				},
 			})
 		} else if layer.Name == "spawn points" {
-			l.PlayerSpawnPosition = utils.Position{
+			l.PlayerSpawnPosition = utils.Vector2{
 				X: object.X,
 				Y: object.Y,
 			}
@@ -241,7 +244,7 @@ func (l *Level) addTilesToLevel(layer Layer) {
 			l.tiles = append(l.tiles, &Tile{
 
 				GameObject: components.GameObject{
-					Position: utils.Position{
+					Position: utils.Vector2{
 						X: float64(column) * l.TileWidth,
 						Y: float64(row) * l.TileHeight,
 					},
@@ -257,26 +260,35 @@ func (l *Level) addTilesToLevel(layer Layer) {
 }
 
 func (l *Level) Update() {
-	offset := &utils.Position{
-		X: 0,
+	offset := &utils.Vector2{
+		X: -l.Player.GameObject.Velocity.X,
 	}
-	for _, tile := range l.tiles {
-		tile.GameObject.SetOffset(utils.Position{
-			X: offset.X,
-			Y: 0.00,
-		})
-	}
-	for _, collision := range l.collisions {
-		collision.GameObject.SetOffset(utils.Position{
-			X: offset.X,
-			Y: 0.00,
-		})
+	shouldMoveLevelLeft := math.Abs(l.CurrentScroll.X) <= l.MaxScroll.X && offset.X < 0
+	shouldMoveLevelRight := offset.X > 0 && math.Abs(l.CurrentScroll.X) > 0
+
+	if shouldMoveLevelLeft || shouldMoveLevelRight {
+		l.Player.XMovementEnabled = false
+		for _, tile := range l.tiles {
+			tile.GameObject.SetOffset(utils.Vector2{
+				X: offset.X,
+				Y: 0.00,
+			})
+		}
+		for _, collision := range l.collisions {
+			collision.GameObject.SetOffset(utils.Vector2{
+				X: offset.X,
+				Y: 0.00,
+			})
+		}
+		l.CurrentScroll.X += offset.X
+
+	} else {
+		l.Player.XMovementEnabled = true
 	}
 
 }
 
 func (l *Level) Draw(screen *ebiten.Image) {
-	fmt.Println("TILE X", l.tiles[0].GameObject.Position.X)
 	for _, tile := range l.tiles {
 		tile.draw(screen)
 	}
