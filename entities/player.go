@@ -96,6 +96,8 @@ func (p *Player) Move() {
 		p.MoveUp()
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		p.MoveDown()
+	} else {
+		p.GameObject.Velocity.X = 0
 	}
 	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
 		p.Jump()
