@@ -14,7 +14,7 @@ import (
 const (
 	ScreenWidth  = 320
 	ScreenHeight = 256
-	FPS          = 10
+	FPS          = 15
 )
 
 type Game struct {

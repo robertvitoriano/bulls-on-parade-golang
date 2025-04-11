@@ -7,7 +7,7 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
-const SPEED = 2.5
+const SPEED = 1.5
 const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
 const JUMP_SPEED float64 = 40
@@ -44,13 +44,13 @@ func NewPlayer() *Player {
 	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
 		Width:  16,
 		Height: 16,
-		Count:  5,
+		Count:  6,
 	})
 
 	player.GameObject.Animator.AddAnimation("walk-right", "character.png", 1, 0, "horizontal", components.FrameProperties{
 		Width:  16,
 		Height: 16,
-		Count:  5,
+		Count:  6,
 	})
 
 	player.GameObject.Animator.AddAnimation("walk-up", "character.png", 0, 7, "vertical", components.FrameProperties{
@@ -64,7 +64,11 @@ func NewPlayer() *Player {
 		Height: 16,
 		Count:  2,
 	})
-
+	player.GameObject.Animator.AddAnimation("idle", "character.png", 0, 0, "vertical", components.FrameProperties{
+		Width:  16,
+		Height: 16,
+		Count:  1,
+	})
 	player.GameObject.Animator.ChangeAnimation("walk-right")
 
 	return player
@@ -98,6 +102,7 @@ func (p *Player) Move() {
 		p.MoveDown()
 	} else {
 		p.GameObject.Velocity.X = 0
+		p.GameObject.Animator.ChangeAnimation("idle")
 	}
 	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
 		p.Jump()
