@@ -8,15 +8,17 @@ import (
 )
 
 const SPEED = 1.5
-const GRAVITY float64 = 20
+const GRAVITY float64 = 10
 const GRAVITY_SMOTHING float64 = .4541561
 const JUMP_SPEED float64 = 90
+const JUMP_HEIGHT float64 = 15
 
 type Player struct {
 	GameObject       components.GameObject
 	collidedSide     utils.CollisionSide
 	jumpRequested    bool
 	XMovementEnabled bool
+	jumpOrigin       float64
 }
 
 func NewPlayer() *Player {
@@ -80,8 +82,9 @@ func (p *Player) setAnimations() {
 func (p *Player) Update() {
 	p.GameObject.Update()
 	p.Move()
-	p.handleGravity()
 	p.handleJumping()
+	p.handleGravity()
+
 }
 
 func (p *Player) handleGravity() {
@@ -91,7 +94,7 @@ func (p *Player) handleGravity() {
 }
 
 func (p *Player) handleJumping() {
-	if p.jumpRequested {
+	if p.jumpRequested && p.jumpOrigin-p.GameObject.Position.Y > JUMP_HEIGHT {
 		p.GameObject.Position.Y -= JUMP_SPEED * GRAVITY_SMOTHING
 	}
 
@@ -116,6 +119,7 @@ func (p *Player) Move() {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
 		p.jumpRequested = true
+		p.jumpOrigin = p.GameObject.GetBottom()
 	}
 }
 
