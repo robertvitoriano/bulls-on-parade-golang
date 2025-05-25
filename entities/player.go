@@ -15,7 +15,7 @@ const JUMP_SPEED float64 = 90
 type Player struct {
 	GameObject       components.GameObject
 	collidedSide     utils.CollisionSide
-	isJumping        bool
+	jumpRequested    bool
 	XMovementEnabled bool
 }
 
@@ -91,12 +91,12 @@ func (p *Player) handleGravity() {
 }
 
 func (p *Player) handleJumping() {
-	if p.isJumping {
+	if p.jumpRequested {
 		p.GameObject.Position.Y -= JUMP_SPEED * GRAVITY_SMOTHING
 	}
 
 	if p.collidedSide == utils.CollisionBottom {
-		p.isJumping = false
+		p.jumpRequested = false
 	}
 
 }
@@ -115,7 +115,7 @@ func (p *Player) Move() {
 		p.GameObject.Animator.ChangeAnimation("idle")
 	}
 	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
-		p.isJumping = true
+		p.jumpRequested = true
 	}
 }
 
@@ -135,11 +135,7 @@ func (p *Player) MoveRight() {
 	p.GameObject.Position.X += p.GameObject.Velocity.X
 
 }
-func (p *Player) Jump() {
-	p.GameObject.Position.Y -= 25
-	p.isJumping = true
 
-}
 func (p *Player) MoveLeft() {
 	p.GameObject.Animator.ChangeAnimation("walk-left")
 
