@@ -10,8 +10,7 @@ import (
 const SPEED = 1.5
 const GRAVITY float64 = 20
 const GRAVITY_SMOTHING float64 = .4541561
-const JUMP_SPEED float64 = 40
-const FALL_SPEED float64 = GRAVITY / 2
+const JUMP_SPEED float64 = 90
 
 type Player struct {
 	GameObject       components.GameObject
@@ -41,54 +40,65 @@ func NewPlayer() *Player {
 		XMovementEnabled: true,
 	}
 
-	player.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
+	player.setAnimations()
+
+	return player
+}
+
+func (p *Player) setAnimations() {
+	p.GameObject.Animator.AddAnimation("walk-left", "character.png", 0, 0, "horizontal", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  6,
 	})
 
-	player.GameObject.Animator.AddAnimation("walk-right", "character.png", 1, 0, "horizontal", components.FrameProperties{
+	p.GameObject.Animator.AddAnimation("walk-right", "character.png", 1, 0, "horizontal", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  6,
 	})
 
-	player.GameObject.Animator.AddAnimation("walk-up", "character.png", 0, 7, "vertical", components.FrameProperties{
+	p.GameObject.Animator.AddAnimation("walk-up", "character.png", 0, 7, "vertical", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  2,
 	})
 
-	player.GameObject.Animator.AddAnimation("walk-down", "character.png", 0, 5, "vertical", components.FrameProperties{
+	p.GameObject.Animator.AddAnimation("walk-down", "character.png", 0, 5, "vertical", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  2,
 	})
-	player.GameObject.Animator.AddAnimation("idle", "character.png", 0, 0, "vertical", components.FrameProperties{
+	p.GameObject.Animator.AddAnimation("idle", "character.png", 0, 0, "vertical", components.FrameProperties{
 		Width:  16,
 		Height: 16,
 		Count:  1,
 	})
-	player.GameObject.Animator.ChangeAnimation("walk-right")
-
-	return player
+	p.GameObject.Animator.ChangeAnimation("walk-right")
 }
 
 func (p *Player) Update() {
 	p.GameObject.Update()
 	p.Move()
 	p.handleGravity()
+	p.handleJumping()
 }
 
 func (p *Player) handleGravity() {
 	if p.collidedSide != utils.CollisionBottom {
-		if p.isJumping {
-			p.GameObject.Position.Y += FALL_SPEED * GRAVITY_SMOTHING
-			return
-		}
-		p.isJumping = false
 		p.GameObject.Position.Y += GRAVITY * GRAVITY_SMOTHING
 	}
+}
+
+func (p *Player) handleJumping() {
+	if p.isJumping {
+		p.GameObject.Position.Y -= JUMP_SPEED * GRAVITY_SMOTHING
+	}
+
+	if p.collidedSide == utils.CollisionBottom {
+		p.isJumping = false
+	}
+
 }
 
 func (p *Player) Move() {
@@ -105,7 +115,7 @@ func (p *Player) Move() {
 		p.GameObject.Animator.ChangeAnimation("idle")
 	}
 	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.collidedSide == utils.CollisionBottom {
-		p.Jump()
+		p.isJumping = true
 	}
 }
 
@@ -126,7 +136,7 @@ func (p *Player) MoveRight() {
 
 }
 func (p *Player) Jump() {
-	p.GameObject.Position.Y -= 35
+	p.GameObject.Position.Y -= 25
 	p.isJumping = true
 
 }

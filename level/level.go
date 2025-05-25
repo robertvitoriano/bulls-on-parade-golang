@@ -263,7 +263,7 @@ func (l *Level) Update() {
 	offset := &utils.Vector2{
 		X: -l.Player.GameObject.Velocity.X,
 	}
-	shouldMoveLevelLeft := math.Abs(l.CurrentScroll.X) <= l.MaxScroll.X && offset.X < 0
+	shouldMoveLevelLeft := (math.Abs(l.CurrentScroll.X) <= l.MaxScroll.X) && offset.X < 0
 	shouldMoveLevelRight := offset.X > 0 && math.Abs(l.CurrentScroll.X) > 0
 
 	if shouldMoveLevelLeft || shouldMoveLevelRight {
@@ -280,6 +280,7 @@ func (l *Level) Update() {
 				Y: 0.00,
 			})
 		}
+
 		l.CurrentScroll.X += offset.X
 
 	} else {
@@ -292,9 +293,12 @@ func (l *Level) Draw(screen *ebiten.Image) {
 	for _, tile := range l.tiles {
 		tile.draw(screen)
 	}
-	// for _, collision := range l.collisions {
-	// 	collision.DebugDraw(screen)
-	// }
+}
+
+func (l *Level) DebugDraw(screen *ebiten.Image) {
+	for _, collision := range l.collisions {
+		collision.DebugDraw(screen)
+	}
 }
 func (l *Level) GetLevelCollisions(other components.GameObject) []*physics.Collision {
 
