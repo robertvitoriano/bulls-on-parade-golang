@@ -7,7 +7,7 @@ import (
 	"github.com/robertvitoriano/bulls-on-parade-golang/utils"
 )
 
-const SPEED = 1.5
+const SPEED = 2
 const GRAVITY float64 = 10
 const GRAVITY_SMOTHING float64 = .4541561
 const JUMP_SPEED float64 = 90
